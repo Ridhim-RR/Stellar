@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String           @id @default(cuid())
+  walletAddress     String           @unique
+  subscribed        Boolean          @default(false)
+  subscriptionTxHash String?
+  creditScore       Int?
+  creditLimit       Float?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  walletAnalytics   WalletAnalytics[]
+}
+
+model WalletAnalytics {
+  id               String   @id @default(cuid())
+  userId           String
+  transactionCount Int      @default(0)
+  paymentCount     Int      @default(0)
+  totalVolume      Float    @default(0)
+  walletAgeDays    Int      @default(0)
+  recentActivity   Int      @default(0)
+  scoreBreakdown   Json?
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
